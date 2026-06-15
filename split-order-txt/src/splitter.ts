@@ -6,17 +6,26 @@ import { InvalidCsvFormatError, parseRecord } from './parser.js';
 import { createOutputFiles, HeaderInfo, moveToBackup, OutputWriter, sanitizeFileName } from './writer.js';
 
 export interface SplitOptions {
+  // path ของไฟล์ต้นฉบับที่ต้อง split
   inputPath: string;
+  // folder ที่จะเขียน output files
   outputDir: string;
+  // folder ที่จะย้ายไฟล์ต้นฉบับไปเมื่อสำเร็จ
   backupDir: string;
+  // true = ย้าย input เข้า backup, false = ทดลองรันโดยไม่ย้ายไฟล์
   shouldBackup: boolean;
 }
 
 export interface SplitResult {
+  // จำนวน header ที่เจอ และเท่ากับจำนวน output file ที่ควรสร้าง
   headerCount: number;
+  // จำนวน detail ที่เขียนสำเร็จ
   detailCount: number;
+  // detail ที่ group ไม่มี header คู่กัน
   skippedDetailCount: number;
+  // รายชื่อ output file ที่สร้าง
   outputFiles: string[];
+  // path ไฟล์ backup จะมีเฉพาะตอน shouldBackup = true
   backupPath?: string;
 }
 
@@ -28,7 +37,9 @@ export class SplitOrderError extends Error {
 }
 
 export async function findDefaultInput(inputDir: string): Promise<string> {
+  // readdir(...withFileTypes) อ่านรายชื่อไฟล์พร้อมบอกว่าเป็น file/folder
   const entries = await readdir(inputDir, { withFileTypes: true });
+  // ถ้า user ไม่ส่ง path มา ใช้ .txt ไฟล์แรกใน input/
   const txtFile = entries.find((entry) => entry.isFile() && entry.name.toLowerCase().endsWith('.txt'));
 
   if (!txtFile) {
@@ -41,6 +52,7 @@ export async function findDefaultInput(inputDir: string): Promise<string> {
 export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult> {
   let inputStat;
   try {
+    // stat ใช้ตรวจว่าไฟล์มีอยู่จริง และดูขนาดไฟล์ได้
     inputStat = await stat(options.inputPath);
   } catch (error) {
     if (isNodeError(error) && error.code === 'ENOENT') {
@@ -50,9 +62,11 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
   }
 
   if (inputStat.size === 0) {
+    // ไฟล์ว่างควรหยุดทันที เพราะไม่มี header/detail ให้ split
     throw new SplitOrderError('Input file is empty.');
   }
 
+  // recursive: true แปลว่าถ้า folder ยังไม่มี ให้สร้างให้เลย
   await mkdir(options.outputDir, { recursive: true });
 
   console.log('Reading file...');
@@ -66,6 +80,7 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
 
   await createOutputFiles(headers);
 
+  // OutputWriter รับ headers เพื่อรู้ว่า group ไหนเขียนไปไฟล์ไหน
   const writer = new OutputWriter(headers);
   let detailCount = 0;
   let skippedDetailCount = 0;
@@ -75,14 +90,17 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
     let lineNumber = 0;
     for await (const line of readLines(options.inputPath)) {
       lineNumber += 1;
+      // parseRecord แปลง string เป็น record object ที่ใช้ switch ด้วย type ได้
       const record = parseRecord(line, lineNumber);
 
       if (record.type === 'separator') {
+        // separator เช่น 13: ต้องอยู่ในทุก output file
         await writer.appendLineToAll(record.raw);
         continue;
       }
 
       if (record.type === 'trailer') {
+        // trailer เช่น 31629# ต้องอยู่ท้ายทุก output file
         await writer.appendLineToAll(record.raw);
         continue;
       }
@@ -105,6 +123,7 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
     }
     throw error;
   } finally {
+    // finally ทำงานเสมอ ไม่ว่าจะสำเร็จหรือ error เพื่อปิด stream ที่เปิดไว้
     await writer.close();
   }
 
@@ -126,6 +145,7 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
 }
 
 async function readHeaders(inputPath: string, outputDir: string): Promise<Map<string, HeaderInfo>> {
+  // Map ใช้ groupNumber เป็น key เพื่อหา header/output path ได้เร็ว
   const headers = new Map<string, HeaderInfo>();
 
   try {
@@ -160,6 +180,7 @@ async function readHeaders(inputPath: string, outputDir: string): Promise<Map<st
 }
 
 async function* readLines(filePath: string): AsyncGenerator<string> {
+  // createInterface จาก readline ช่วยเปลี่ยน stream เป็น async iterable ทีละบรรทัด
   const lineReader = createInterface({
     input: createReadStream(filePath, { encoding: 'utf8' }),
     crlfDelay: Infinity,
@@ -172,5 +193,6 @@ async function* readLines(filePath: string): AsyncGenerator<string> {
 }
 
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  // Node.js error หลายตัวมี field code เช่น ENOENT, EACCES
   return error instanceof Error && 'code' in error;
 }
