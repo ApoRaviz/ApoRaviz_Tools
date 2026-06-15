@@ -10,6 +10,7 @@ interface CliOptions {
 
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2));
+  // ถ้าไม่ส่ง path มา โปรแกรมจะหาไฟล์ .txt แรกใน input/ ให้เอง
   const inputPath = options.inputPath ?? (await findDefaultInput(path.resolve('input')));
 
   const result = await splitOrderTxt({
@@ -41,6 +42,7 @@ function parseArgs(args: string[]): CliOptions {
     shouldBackup: true,
   };
 
+  // รองรับรูปแบบ: [inputPath] --output [dir] --backup [dir] --no-backup
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
 

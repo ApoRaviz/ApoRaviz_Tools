@@ -21,6 +21,7 @@ export class OutputWriter {
     const header = this.headers.get(groupNumber);
 
     if (!header) {
+      // detail ที่ไม่มี header คู่กันจะถูกนับเป็น skipped แทนการสร้างไฟล์มั่ว ๆ
       return false;
     }
 
@@ -50,12 +51,14 @@ export class OutputWriter {
     const existing = this.streams.get(groupNumber);
 
     if (existing) {
+      // ขยับ stream ที่เพิ่งใช้ไปท้าย Map เพื่อทำ LRU แบบง่าย ๆ
       this.streams.delete(groupNumber);
       this.streams.set(groupNumber, existing);
       return existing;
     }
 
     if (this.streams.size >= this.maxOpenStreams) {
+      // จำกัดจำนวน stream ที่เปิดพร้อมกัน เผื่อไฟล์มี group เยอะมาก
       const oldestGroup = this.streams.keys().next().value as string;
       const oldestStream = this.streams.get(oldestGroup);
       oldestStream?.end();
@@ -70,6 +73,7 @@ export class OutputWriter {
 
 export async function createOutputFiles(headers: Map<string, HeaderInfo>): Promise<void> {
   for (const header of headers.values()) {
+    // เริ่มไฟล์ด้วย header และเว้น 1 บรรทัด ก่อน append detail ใน pass ถัดไป
     await writeFile(header.outputPath, `${header.raw}\n\n`, 'utf8');
   }
 }

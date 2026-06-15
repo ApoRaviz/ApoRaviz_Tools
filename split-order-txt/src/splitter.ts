@@ -49,6 +49,7 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
 
   console.log('Reading file...');
 
+  // Pass 1: เก็บ header ทั้งหมดก่อน เพื่อรู้ว่าต้องสร้าง output file อะไรบ้าง
   const headers = await readHeaders(options.inputPath, options.outputDir);
 
   if (headers.size === 0) {
@@ -62,6 +63,7 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
   let skippedDetailCount = 0;
 
   try {
+    // Pass 2: stream รายการ detail แล้ว append ไปยังไฟล์ของ group ที่ตรงกัน
     for await (const line of readLines(options.inputPath)) {
       const record = parseRecord(line);
 
@@ -90,6 +92,7 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
 
   let backupPath: string | undefined;
   if (options.shouldBackup) {
+    // ย้ายไฟล์ต้นฉบับหลัง split สำเร็จเท่านั้น เพื่อให้ไฟล์เสียยัง retry ได้
     backupPath = await moveToBackup(options.inputPath, options.backupDir);
   }
 
@@ -140,6 +143,7 @@ async function* readLines(filePath: string): AsyncGenerator<string> {
     crlfDelay: Infinity,
   });
 
+  // ใช้ async generator เพื่ออ่านไฟล์ใหญ่ทีละบรรทัด ไม่โหลดทั้งไฟล์เข้าหน่วยความจำ
   for await (const line of lineReader) {
     yield line;
   }

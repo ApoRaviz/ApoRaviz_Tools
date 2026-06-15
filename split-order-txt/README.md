@@ -2,6 +2,8 @@
 
 Split a large order TXT file into multiple TXT files by header group number.
 
+Usage guide in Thai: [`docs/how-to-use.md`](./docs/how-to-use.md)
+
 ## Input
 
 Put a TXT file in `input/`.

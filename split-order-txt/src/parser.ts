@@ -27,11 +27,13 @@ export function parseCsvLine(line: string): string[] {
   let current = '';
   let inQuotes = false;
 
+  // อ่านทีละตัวอักษรเพื่อแยก comma เฉพาะตัวที่อยู่นอก quote
   for (let index = 0; index < line.length; index += 1) {
     const char = line[index];
     const nextChar = line[index + 1];
 
     if (char === '"') {
+      // CSV ใช้ "" เพื่อแทนเครื่องหมาย quote จริงในข้อมูล
       if (inQuotes && nextChar === '"') {
         current += '"';
         index += 1;
@@ -65,6 +67,7 @@ export function parseRecord(line: string): ParsedRecord {
 
   const values = parseCsvLine(line);
 
+  // ไฟล์นี้ใช้จำนวน column แยกชนิด record: header = 5, detail = 4
   if (values.length === 5) {
     return {
       type: 'header',

@@ -11,6 +11,7 @@ This repository is for practical tools that are useful but too small to become a
 | `split-order-txt` | Split large order TXT files by header group number | First usable CLI |
 
 Detailed requirement: [`docs/split-order-txt-requirement.md`](./docs/split-order-txt-requirement.md)
+Usage guide: [`split-order-txt/docs/how-to-use.md`](./split-order-txt/docs/how-to-use.md)
 
 ## Repository Role
 
