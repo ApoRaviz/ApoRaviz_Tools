@@ -77,8 +77,8 @@ export class OutputWriter {
 
 export async function createOutputFiles(headers: Map<string, HeaderInfo>): Promise<void> {
   for (const header of headers.values()) {
-    // เริ่มไฟล์ด้วย header และเว้น 1 บรรทัด ก่อน append detail ใน pass ถัดไป
-    await writeFile(header.outputPath, `${header.raw}\n\n`, 'utf8');
+    // เริ่มไฟล์ด้วย header แล้วให้ separator/detail ต่อในบรรทัดถัดไปทันที
+    await writeFile(header.outputPath, `${header.raw}\n`, 'utf8');
   }
 }
 
