@@ -1,0 +1,20 @@
+{
+  "name": "split-order-txt",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "test": "tsx --test test/**/*.test.ts",
+    "start": "node dist/index.js"
+  },
+  "engines": {
+    "node": ">=24.15.0 <25"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.22.4",
+    "typescript": "~6.0.3"
+  }
+}
