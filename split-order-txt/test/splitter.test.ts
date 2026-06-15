@@ -84,6 +84,22 @@ test('splitOrderTxt rejects empty input files', async () => {
   );
 });
 
+test('splitOrderTxt rejects missing input files with a friendly message', async () => {
+  const workDir = await mkdtemp(path.join(tmpdir(), 'split-order-txt-'));
+  const inputPath = path.join(workDir, 'missing.txt');
+
+  await assert.rejects(
+    () =>
+      splitOrderTxt({
+        inputPath,
+        outputDir: path.join(workDir, 'output'),
+        backupDir: path.join(workDir, 'backup'),
+        shouldBackup: false,
+      }),
+    new SplitOrderError(`Input file not found: ${inputPath}`),
+  );
+});
+
 test('findDefaultInput returns the first txt file in the input folder', async () => {
   const workDir = await mkdtemp(path.join(tmpdir(), 'split-order-txt-'));
 

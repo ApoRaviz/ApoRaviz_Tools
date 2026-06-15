@@ -50,6 +50,12 @@ npm run build
 input/order.txt
 ```
 
+ถ้าจะลองด้วยไฟล์ตัวอย่างที่มากับโปรเจกต์ ให้ copy จาก `samples/` ไปที่ `input/` ก่อน:
+
+```bash
+cp samples/order.txt input/order.txt
+```
+
 2. รันคำสั่ง:
 
 ```bash
@@ -114,6 +120,7 @@ Completed.
 
 | ข้อความ | ความหมาย | วิธีแก้ |
 |---|---|---|
+| `Input file not found: ...` | path ที่ส่งให้โปรแกรมไม่มีไฟล์จริง | วางไฟล์ให้ตรง path หรือ copy `samples/order.txt` ไปที่ `input/order.txt` |
 | `Input file is empty.` | ไฟล์ว่าง | ตรวจไฟล์ต้นฉบับอีกครั้ง |
 | `Header record not found.` | ไม่เจอแถว header | ตรวจ format ไฟล์ว่ามี header 5 ช่องหรือไม่ |
 | `Invalid file format.` | CSV/TXT format ไม่ถูกต้อง | ตรวจ quote, comma, จำนวน column |

@@ -20,6 +20,12 @@ Detail example:
 "3","0650040062","079656650730 ","2"
 ```
 
+Try the sample file:
+
+```bash
+cp samples/order.txt input/order.txt
+```
+
 ## Output
 
 The tool creates one output file per group:

@@ -39,7 +39,15 @@ export async function findDefaultInput(inputDir: string): Promise<string> {
 }
 
 export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult> {
-  const inputStat = await stat(options.inputPath);
+  let inputStat;
+  try {
+    inputStat = await stat(options.inputPath);
+  } catch (error) {
+    if (isNodeError(error) && error.code === 'ENOENT') {
+      throw new SplitOrderError(`Input file not found: ${options.inputPath}`);
+    }
+    throw error;
+  }
 
   if (inputStat.size === 0) {
     throw new SplitOrderError('Input file is empty.');
@@ -147,4 +155,8 @@ async function* readLines(filePath: string): AsyncGenerator<string> {
   for await (const line of lineReader) {
     yield line;
   }
+}
+
+function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && 'code' in error;
 }
