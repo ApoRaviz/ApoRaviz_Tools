@@ -72,8 +72,10 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
 
   try {
     // Pass 2: stream รายการ detail แล้ว append ไปยังไฟล์ของ group ที่ตรงกัน
+    let lineNumber = 0;
     for await (const line of readLines(options.inputPath)) {
-      const record = parseRecord(line);
+      lineNumber += 1;
+      const record = parseRecord(line, lineNumber);
 
       if (record.type !== 'detail') {
         continue;
@@ -117,8 +119,10 @@ async function readHeaders(inputPath: string, outputDir: string): Promise<Map<st
   const headers = new Map<string, HeaderInfo>();
 
   try {
+    let lineNumber = 0;
     for await (const line of readLines(inputPath)) {
-      const record = parseRecord(line);
+      lineNumber += 1;
+      const record = parseRecord(line, lineNumber);
 
       if (record.type !== 'header') {
         continue;

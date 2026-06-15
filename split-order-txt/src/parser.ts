@@ -13,6 +13,10 @@ export type ParsedRecord =
   | {
       type: 'blank';
       raw: string;
+    }
+  | {
+      type: 'ignored';
+      raw: string;
     };
 
 export class InvalidCsvFormatError extends Error {
@@ -60,18 +64,33 @@ export function parseCsvLine(line: string): string[] {
   return values;
 }
 
-export function parseRecord(line: string): ParsedRecord {
-  if (line.trim() === '') {
-    return { type: 'blank', raw: line };
+export function parseRecord(line: string, lineNumber?: number): ParsedRecord {
+  const normalizedLine = line.replace(/^\uFEFF/, '');
+  const trimmedLine = normalizedLine.trim();
+
+  if (trimmedLine === '') {
+    return { type: 'blank', raw: normalizedLine };
   }
 
-  const values = parseCsvLine(line);
+  if (/^\d+:$/.test(trimmedLine) || /^\d+#$/.test(trimmedLine)) {
+    return { type: 'ignored', raw: normalizedLine };
+  }
+
+  let values: string[];
+  try {
+    values = parseCsvLine(normalizedLine);
+  } catch (error) {
+    if (error instanceof InvalidCsvFormatError && lineNumber !== undefined) {
+      throw new InvalidCsvFormatError(`Invalid file format at line ${lineNumber}.`);
+    }
+    throw error;
+  }
 
   // ไฟล์นี้ใช้จำนวน column แยกชนิด record: header = 5, detail = 4
   if (values.length === 5) {
     return {
       type: 'header',
-      raw: line,
+      raw: normalizedLine,
       groupNumber: values[1],
       orderNumber: values[2],
     };
@@ -80,10 +99,10 @@ export function parseRecord(line: string): ParsedRecord {
   if (values.length === 4) {
     return {
       type: 'detail',
-      raw: line,
+      raw: normalizedLine,
       groupNumber: values[0],
     };
   }
 
-  throw new InvalidCsvFormatError();
+  throw new InvalidCsvFormatError(lineNumber === undefined ? undefined : `Invalid file format at line ${lineNumber}.`);
 }

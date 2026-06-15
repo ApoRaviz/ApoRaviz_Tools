@@ -9,6 +9,8 @@
 - Header record: แถวหัวใบงาน มี `Group Number` และ `Order Number`
 - Detail record: แถวรายการสินค้า มี `Group Number`, item code, barcode, quantity
 
+โปรแกรมจะข้ามบรรทัดประกอบของไฟล์ export เช่น `3:` หรือ `31629#`
+
 จากนั้นโปรแกรมจะสร้างไฟล์ output แยกตาม group เช่น:
 
 ```txt
@@ -123,6 +125,7 @@ Completed.
 | `Input file not found: ...` | path ที่ส่งให้โปรแกรมไม่มีไฟล์จริง | วางไฟล์ให้ตรง path หรือ copy `samples/order.txt` ไปที่ `input/order.txt` |
 | `Input file is empty.` | ไฟล์ว่าง | ตรวจไฟล์ต้นฉบับอีกครั้ง |
 | `Header record not found.` | ไม่เจอแถว header | ตรวจ format ไฟล์ว่ามี header 5 ช่องหรือไม่ |
+| `Invalid file format at line ...` | CSV/TXT format ไม่ถูกต้องที่บรรทัดนั้น | ตรวจ quote, comma, จำนวน column |
 | `Invalid file format.` | CSV/TXT format ไม่ถูกต้อง | ตรวจ quote, comma, จำนวน column |
 | `No .txt file found in input folder.` | รันโดยไม่ระบุไฟล์ แต่ `input/` ไม่มี `.txt` | วางไฟล์ใน `input/` หรือระบุ path เอง |
 
