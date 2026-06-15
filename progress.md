@@ -11,10 +11,10 @@
 - [x] Add backup rule for successfully processed input files
 - [x] Add automated parser and splitter tests
 - [x] Run TypeScript build and automated tests
+- [x] Run sample split command and confirm output/backup folders
 - [x] Document future UI direction separately from the CLI version
 
 ## Next
 
 - [ ] Add more sample input cases
-- [ ] Run sample split command and confirm output/backup folders
 - [ ] Add Portfolio link after the first tool is stable

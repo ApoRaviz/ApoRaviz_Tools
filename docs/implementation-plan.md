@@ -23,9 +23,9 @@
 - [x] Add automated parser and splitter tests
 - [x] Run TypeScript build
 - [x] Run automated tests
-- [ ] Run the sample split command
-- [ ] Confirm output files
-- [ ] Confirm input file moves to backup
+- [x] Run the sample split command
+- [x] Confirm output files
+- [x] Confirm input file moves to backup
 
 ## Step 3 - Portfolio And Docs
 
