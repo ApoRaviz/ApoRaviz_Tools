@@ -13,6 +13,7 @@
 - [x] Run TypeScript build and automated tests
 - [x] Run sample split command and confirm output/backup folders
 - [x] Add Thai usage guide and source code comments
+- [x] Preserve export separator and trailer rows in every output file
 - [x] Document future UI direction separately from the CLI version
 
 ## Next

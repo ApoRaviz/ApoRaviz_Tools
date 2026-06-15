@@ -17,11 +17,11 @@ export class OutputWriter {
     private readonly maxOpenStreams = 64,
   ) {}
 
-  async appendDetail(groupNumber: string, line: string): Promise<boolean> {
+  async appendLine(groupNumber: string, line: string): Promise<boolean> {
     const header = this.headers.get(groupNumber);
 
     if (!header) {
-      // detail ที่ไม่มี header คู่กันจะถูกนับเป็น skipped แทนการสร้างไฟล์มั่ว ๆ
+      // line ที่ไม่มี header คู่กันจะไม่ถูกเขียน เพื่อกันการสร้างไฟล์มั่ว ๆ
       return false;
     }
 
@@ -32,6 +32,10 @@ export class OutputWriter {
     }
 
     return true;
+  }
+
+  async appendLineToAll(line: string): Promise<void> {
+    await Promise.all([...this.headers.keys()].map((groupNumber) => this.appendLine(groupNumber, line)));
   }
 
   async close(): Promise<void> {

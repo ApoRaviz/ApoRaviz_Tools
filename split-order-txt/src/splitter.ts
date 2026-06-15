@@ -77,11 +77,21 @@ export async function splitOrderTxt(options: SplitOptions): Promise<SplitResult>
       lineNumber += 1;
       const record = parseRecord(line, lineNumber);
 
+      if (record.type === 'separator') {
+        await writer.appendLineToAll(record.raw);
+        continue;
+      }
+
+      if (record.type === 'trailer') {
+        await writer.appendLineToAll(record.raw);
+        continue;
+      }
+
       if (record.type !== 'detail') {
         continue;
       }
 
-      const appended = await writer.appendDetail(record.groupNumber, record.raw);
+      const appended = await writer.appendLine(record.groupNumber, record.raw);
 
       if (appended) {
         detailCount += 1;

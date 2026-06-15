@@ -48,13 +48,13 @@ test('parseRecord keeps blank lines as blank records', () => {
   });
 });
 
-test('parseRecord ignores export group labels and trailer rows', () => {
+test('parseRecord detects export separator and trailer rows', () => {
   assert.deepEqual(parseRecord('3:'), {
-    type: 'ignored',
+    type: 'separator',
     raw: '3:',
   });
   assert.deepEqual(parseRecord('31629#'), {
-    type: 'ignored',
+    type: 'trailer',
     raw: '31629#',
   });
 });

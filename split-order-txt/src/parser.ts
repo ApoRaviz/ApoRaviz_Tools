@@ -15,7 +15,11 @@ export type ParsedRecord =
       raw: string;
     }
   | {
-      type: 'ignored';
+      type: 'separator';
+      raw: string;
+    }
+  | {
+      type: 'trailer';
       raw: string;
     };
 
@@ -72,8 +76,15 @@ export function parseRecord(line: string, lineNumber?: number): ParsedRecord {
     return { type: 'blank', raw: normalizedLine };
   }
 
-  if (/^\d+:$/.test(trimmedLine) || /^\d+#$/.test(trimmedLine)) {
-    return { type: 'ignored', raw: normalizedLine };
+  if (/^\d+:$/.test(trimmedLine)) {
+    return {
+      type: 'separator',
+      raw: normalizedLine,
+    };
+  }
+
+  if (/^\d+#$/.test(trimmedLine)) {
+    return { type: 'trailer', raw: normalizedLine };
   }
 
   let values: string[];

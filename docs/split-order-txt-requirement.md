@@ -88,6 +88,31 @@ must match all Detail rows starting with:
 "3",
 ```
 
+### Export Separator And Trailer Rows
+
+Some export files include a separator row after all headers:
+
+```txt
+3:
+```
+
+or:
+
+```txt
+13:
+```
+
+They can also include a trailer row at the end of the file:
+
+```txt
+31629#
+```
+
+Every output file must keep both rows:
+
+- the separator row goes after that file's header and blank line
+- the trailer row goes at the end of the file
+
 ### Example Output
 
 Header:
@@ -114,8 +139,10 @@ contains:
 ```txt
 "2026-06-15 08:05:39","3","PL00126-004927","008",""
 
+3:
 "3","0650040062","079656650730 ","2"
 "3","1101020003","2011010200036","3"
+31629#
 ```
 
 ## Output Folder
